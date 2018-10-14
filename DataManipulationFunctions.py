@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 import sys
 import os
-
+import random
+import collections
 
 def readData(filename):
 
@@ -29,3 +30,66 @@ def splitData(data):
         y.append(i[len(i)-1])
 
     return X, y
+
+def stratifyData(X, y, num_folds):
+    """
+    Stratifies data and returns a set of folds that can be iterated over
+    :param X:
+    :param y:
+    :param num_folds:
+    :return:
+    """
+
+    # get unique class
+    classes = list(set(y))
+    indices = dict()
+    for c in classes:
+        indices[c] = []
+
+    # split the indices between the two classes
+    for i in range(0, len(y)):
+        indices[y[i]].append(i)
+
+    # shuffle both the sets
+    for c in classes:
+        random.shuffle(indices[c])
+
+    # compute data per fold
+    dpf = round(len(X)/num_folds)
+    print("Data per fold = ", dpf)
+    # ratio of classes
+    count = dict(collections.Counter(y))
+    ratio = count[classes[0]]/len(y)
+    print("Optimal Ratio = ", ratio)
+    # folds will hold the indices for each fold of data
+    folds = dict()
+    for i in range(num_folds):
+        folds[i] = []
+
+    # for each fold
+    for i in range(num_folds):
+
+        num_class_0 = round(ratio*dpf)  # number of instances to pull from class 0
+        num_class_1 = dpf - num_class_0  # number of instances to pull from class 1
+
+        if num_class_0 <= len(indices[classes[0]]) and num_class_1 <= len(indices[classes[1]]): # ensure both classes have enough data to split
+            for j in range(num_class_0):
+                folds[i].append(indices[classes[0]].pop())
+            for j in range(num_class_1):
+                folds[i].append(indices[classes[1]].pop())
+        else: # if one of the classes do not have enough data, then simply place all the remaining values into a single fold
+            for j in range(len(indices[classes[0]])):
+                folds[i].append(indices[classes[0]].pop())
+            for j in range(len(indices[classes[1]])):
+                folds[i].append(indices[classes[1]].pop())
+
+    return folds
+
+
+
+
+
+
+
+
+
