@@ -16,4 +16,4 @@ if __name__ == "__main__":
 
     print(folds)
     neural_net = createNeuralNetwork(len(meta.names())-1)
-    # print(getOutput(X[0], neural_net))
+    print(getOutput(X[0], neural_net))
