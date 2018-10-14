@@ -88,6 +88,20 @@ def getOutput(input, neural_net):
 
 
 
+def derivative_cross_entropy(neural_net, output, y):
+    pass
+
+def trainNeuralNetwork(neural_net, train_X, train_y, l_r, num_epochs):
+
+    # number of epochs means how many times you go over the dataset
+    for i in range(num_epochs):
+        for X, y in zip(train_X, train_X):
+            output = getOutput(X, neural_net)
+            error = calculate_cross_entropy_error(neural_net, output, y)
+            backpropogate(X, error)
+
+
+
 
 if __name__ == '__main__':
 

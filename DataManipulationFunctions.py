@@ -86,8 +86,22 @@ def stratifyData(X, y, num_folds):
     return folds
 
 
+def convertToBinary(y, meta):
+    """
+    Convert a reponse variable into binary.
+    :param y: labels
+    :param meta: meta from arff
+    :return: y containing binary labels (0 and 1)
+    """
+    classes = [str.encode(meta['Class'][1][0]), str.encode(meta['Class'][1][0])]
+    new_y = []
+    for label in y:
+        if label == classes[0]:
+            new_y.append(0) # if iot is rock
+        else:
+            new_y.append(1) # if it is mine
 
-
+    return new_y
 
 
 
