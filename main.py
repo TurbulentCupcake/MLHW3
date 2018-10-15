@@ -9,7 +9,7 @@ import numpy as np
 if __name__ == "__main__":
     np.seterr(all='raise')
     trainfile = "sonar.arff"
-    num_folds = 10
+    num_folds = 2
     learning_rate = 0.1
     num_epochs = 10
 
@@ -33,6 +33,7 @@ if __name__ == "__main__":
         neural_net = createNeuralNetwork(len(meta.names())-1)
 
         # train the neural net with the new data
+
         trainNeuralNetwork(neural_net, train_X, train_y, learning_rate, num_epochs)
 
         # cross validation

@@ -12,7 +12,7 @@ def createNeuralNetwork(numInputs):
     :param numInputs: integer
     :return: list containing nodes for each level
     """
-
+    # random.seed(1)
     neural_net = []
     # Step 1: create the input nodes and store then in an array
     input_nodes = []
@@ -24,6 +24,7 @@ def createNeuralNetwork(numInputs):
     for i in range(0, numInputs):
         p = Perceptron()
         p.weights = [random.uniform(-1,1) for j in range(0, numInputs+1)] # set random weights
+        # print(p.weights)
         # note that the random weights assign here correspond to each input node that will be
         # attached later. the weights are IN THE SAME ORDER AS THE INPUT NODES.
         p.isInputNode = False
@@ -53,10 +54,8 @@ def createNeuralNetwork(numInputs):
     return [input_nodes, hidden_nodes, output_node]
 
 def sigmoid(x):
-  if x < 0:
-    return 1 - 1/(1 + math.exp(x))
-  else:
-    return 1/(1 + math.exp(-x))
+
+    return 1.0/(1.0 + math.exp(-x))
 
 def derivative_sigmoid(x):
 
@@ -82,7 +81,7 @@ def getOutput(input, neural_net):
         total = 0
         # compute the input for the hidden node
         for j in range(1,len(neural_net[1][i].weights)): # iterate through each previous node and its corresponding weight
-            total += neural_net[1][i].weights[j]*neural_net[1][i].prevNodes[j-1].outputValue
+            total += neural_net[1][i].weights[j]*input[j-1]
         total += neural_net[1][i].weights[0]
         neural_net[1][i].outputValue = sigmoid(total)  # feed through sigmoid
 
@@ -113,10 +112,19 @@ def trainNeuralNetwork(neural_net, train_X, train_y, l_r, num_epochs):
     for i in range(num_epochs):
         j = 0
         print('Epoch ', i)
-        for X, y in zip(train_X, train_y):
-            output = getOutput(X, neural_net)
-            backpropogate(neural_net, X, y, output,  l_r)
+        idx2 = list(range(len(train_X)))
+        random.shuffle(idx2)
+        for i in idx2:
+            output = getOutput(train_X[i], neural_net)
+            # print(y, output)
+            backpropogate(neural_net, train_X[i], train_y[i], output,  l_r)
             j+=1
+        print("Weights for output")
+
+        print(neural_net[2].weights)
+        print("Hidden layer nodes weights")
+        for i in range(0,2):
+            print(neural_net[1][i].weights)
 
 
 def backpropogate(neural_net, X, y, output,  l_r):
@@ -135,12 +143,8 @@ def backpropogate(neural_net, X, y, output,  l_r):
 
     # for each of the hidden node values, multiply them with the delta of the output
     for i in range(len(neural_net[2].prevNodes)):
-        diff_weights_output.append(delta_output*neural_net[2].prevNodes[i].outputValue)
+        diff_weights_output.append(delta_output * neural_net[2].prevNodes[i].outputValue)
 
-    # deduct the diff weights from the existing weights for the output node
-    assert(len(diff_weights_output) == len(neural_net[2].weights))
-    for i in range(len(diff_weights_output)):
-        neural_net[2].weights[i] = neural_net[2].weights[i] - (l_r*diff_weights_output[i])
 
 
     # Now, compute the deltas for all the hidden layer nodes
@@ -154,11 +158,8 @@ def backpropogate(neural_net, X, y, output,  l_r):
     # for each hidden layer
     for i in range(len(neural_net[1])):
         # compute the z_value
-        total = 0
-        for j in range(1, len(neural_net[1][i].weights)):
-            total += neural_net[1][i].weights[j] * neural_net[1][i].prevNodes[j - 1].outputValue
-        total += neural_net[1][i].weights[0] # add bias
-        z_value = derivative_sigmoid(sigmoid(total))
+
+        z_value = derivative_sigmoid(neural_net[1][i].outputValue)
         z_derivatives_hidden.append(z_value)
 
     # now, compute deltas for each hidden layer
@@ -173,6 +174,10 @@ def backpropogate(neural_net, X, y, output,  l_r):
     # using this computed value, we will modify the weights that connect
     # the hidden layer node to the input layer nodes
 
+    assert (len(diff_weights_output) == len(neural_net[2].weights))
+    for i in range(len(diff_weights_output)):
+        neural_net[2].weights[i] = neural_net[2].weights[i] - (l_r * diff_weights_output[i])
+
     # iterate through each hidden node
     for i in range(len(neural_net[1])):
 
@@ -184,7 +189,7 @@ def backpropogate(neural_net, X, y, output,  l_r):
             # hidden node times the value of the input node
             # times the learning rate.
             neural_net[1][i].weights[j+1] = neural_net[1][i].weights[j+1] -\
-                                            (l_r * delta_hidden[i] * neural_net[1][i].prevNodes[j].outputValue)
+                                            (l_r * delta_hidden[i] * X[j])
 
         # add correction to the bias
         neural_net[1][i].weights[0] = neural_net[1][i].weights[0] - (l_r*delta_hidden[i])
