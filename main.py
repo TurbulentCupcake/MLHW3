@@ -9,9 +9,9 @@ import numpy as np
 if __name__ == "__main__":
     np.seterr(all='raise')
     trainfile = "sonar.arff"
-    num_folds = 2
+    num_folds = 10
     learning_rate = 0.1
-    num_epochs = 10
+    num_epochs = 25
 
     data, meta = readData(trainfile)
     X,y = splitData(data)

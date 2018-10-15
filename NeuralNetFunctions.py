@@ -119,12 +119,12 @@ def trainNeuralNetwork(neural_net, train_X, train_y, l_r, num_epochs):
             # print(y, output)
             backpropogate(neural_net, train_X[i], train_y[i], output,  l_r)
             j+=1
-        print("Weights for output")
+        # print("Weights for output")
 
         print(neural_net[2].weights)
-        print("Hidden layer nodes weights")
-        for i in range(0,2):
-            print(neural_net[1][i].weights)
+        # print("Hidden layer nodes weights")
+        # for i in range(0,2):
+        #     print(neural_net[1][i].weights)
 
 
 def backpropogate(neural_net, X, y, output,  l_r):
