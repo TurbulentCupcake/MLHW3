@@ -2,7 +2,8 @@ from perceptron import Perceptron
 import random
 import math
 from DataManipulationFunctions import *
-
+import numpy as np
+np.seterr("")
 def createNeuralNetwork(numInputs):
     """
     Creates a fully connected neural network with one hidden layer (with
@@ -44,16 +45,25 @@ def createNeuralNetwork(numInputs):
 
     # for each hidden node, link to the output node
     for h in hidden_nodes:
-        h.nextNodes.append(output_node)
+        h.nextNodes = output_node
 
     # for the output node, link to all hidden nodes
     output_node.prevNodes = hidden_nodes
 
     return [input_nodes, hidden_nodes, output_node]
 
-
 def sigmoid(x):
-    return 1/(1+math.exp(-x))
+  if x < 0:
+    return 1 - 1/(1 + math.exp(x))
+  else:
+    return 1/(1 + math.exp(-x))
+
+def derivative_sigmoid(x):
+
+    x = np.array(x, dtype=np.longfloat)
+    out = x * (1 - x)
+    return out
+
 
 def getOutput(input, neural_net):
     """
@@ -62,7 +72,6 @@ def getOutput(input, neural_net):
     :param neural_net:
     :return: a float between 0 and 1 giving the output value
     """
-
     # Step 1: assign all input values to the input nodes
 
     for i in range(0,len(input)):
@@ -88,17 +97,98 @@ def getOutput(input, neural_net):
 
 
 
-def derivative_cross_entropy(neural_net, output, y):
-    pass
+def derivative_cross_entropy(output, y):
+    print('y ', y , 'output ', output)
+    if y == 0:
+        return 1/(1-output)
+    elif y == 1:
+        return -1/y
+
+def cross_entropy_error(output, y):
+    return -y*math.log(output) - (1-y)*math.log(1-output)
 
 def trainNeuralNetwork(neural_net, train_X, train_y, l_r, num_epochs):
-
+    # warnings.filterwarnings('error')
     # number of epochs means how many times you go over the dataset
     for i in range(num_epochs):
-        for X, y in zip(train_X, train_X):
+        j = 0
+        print('Epoch ', i)
+        for X, y in zip(train_X, train_y):
             output = getOutput(X, neural_net)
-            error = calculate_cross_entropy_error(neural_net, output, y)
-            backpropogate(X, error)
+            backpropogate(neural_net, X, y, output,  l_r)
+            j+=1
+
+
+def backpropogate(neural_net, X, y, output,  l_r):
+
+
+
+    # compute delta for the output node
+    # The explanation for this is found at https://www.ics.uci.edu/~pjsadows/notes.pdf (first 2 pages)
+    delta_output = output - y
+
+    # compute the dE/dw for each weight that connect
+    # the hidden layer to output
+    diff_weights_output = []
+    # append delta_output, as this is simply the change for bias
+    diff_weights_output.append(delta_output)
+
+    # for each of the hidden node values, multiply them with the delta of the output
+    for i in range(len(neural_net[2].prevNodes)):
+        diff_weights_output.append(delta_output*neural_net[2].prevNodes[i].outputValue)
+
+    # deduct the diff weights from the existing weights for the output node
+    assert(len(diff_weights_output) == len(neural_net[2].weights))
+    for i in range(len(diff_weights_output)):
+        neural_net[2].weights[i] = neural_net[2].weights[i] - (l_r*diff_weights_output[i])
+
+
+    # Now, compute the deltas for all the hidden layer nodes
+    # Typically, we would need to sum up the product of the delta of the output and the weight
+    # connecting the hidden to the output. But here because there is only one output, we can
+    # simply multiply the delta and weight of the link from hidden to output and then
+    # multiply this with the derivative_sigmoid of z_output for each node
+
+    z_derivatives_hidden = []
+
+    # for each hidden layer
+    for i in range(len(neural_net[1])):
+        # compute the z_value
+        total = 0
+        for j in range(1, len(neural_net[1][i].weights)):
+            total += neural_net[1][i].weights[j] * neural_net[1][i].prevNodes[j - 1].outputValue
+        total += neural_net[1][i].weights[0] # add bias
+        z_value = derivative_sigmoid(sigmoid(total))
+        z_derivatives_hidden.append(z_value)
+
+    # now, compute deltas for each hidden layer
+    delta_hidden = []
+
+    for i in range(len(z_derivatives_hidden)):
+        d = neural_net[1][i].nextNodes.weights[i+1] * delta_output * z_derivatives_hidden[i]
+        delta_hidden.append(d)
+
+    # now we have all the delta outputs for the hidden layer
+    # now we must compute the delta_hidden*xi for every input xi,
+    # using this computed value, we will modify the weights that connect
+    # the hidden layer node to the input layer nodes
+
+    # iterate through each hidden node
+    for i in range(len(neural_net[1])):
+
+        # iterate through the prev nodes of each hidden node
+        for j in range(len(neural_net[1][i].prevNodes)):
+
+            # subtract from the existing weight between this prev node
+            # and the current hidden node, the computed delta for that
+            # hidden node times the value of the input node
+            # times the learning rate.
+            neural_net[1][i].weights[j+1] = neural_net[1][i].weights[j+1] -\
+                                            (l_r * delta_hidden[i] * neural_net[1][i].prevNodes[j].outputValue)
+
+        # add correction to the bias
+        neural_net[1][i].weights[0] = neural_net[1][i].weights[0] - (l_r*delta_hidden[i])
+
 
 
 

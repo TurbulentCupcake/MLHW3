@@ -56,11 +56,9 @@ def stratifyData(X, y, num_folds):
 
     # compute data per fold
     dpf = round(len(X)/num_folds)
-    print("Data per fold = ", dpf)
     # ratio of classes
     count = dict(collections.Counter(y))
     ratio = count[classes[0]]/len(y)
-    print("Optimal Ratio = ", ratio)
     # folds will hold the indices for each fold of data
     folds = dict()
     for i in range(num_folds):

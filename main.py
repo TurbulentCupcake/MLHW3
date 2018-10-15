@@ -2,15 +2,15 @@ from perceptron import *
 from NeuralNetFunctions import *
 from DataManipulationFunctions import *
 import sys
-
+import numpy as np
 
 
 
 if __name__ == "__main__":
-
+    np.seterr(all='raise')
     trainfile = "sonar.arff"
     num_folds = 10
-    learning_rate = 1
+    learning_rate = 0.1
     num_epochs = 10
 
     data, meta = readData(trainfile)
@@ -33,5 +33,17 @@ if __name__ == "__main__":
         neural_net = createNeuralNetwork(len(meta.names())-1)
 
         # train the neural net with the new data
-        trainNeuralNetwork(neural_net, train_X, train_y)
+        trainNeuralNetwork(neural_net, train_X, train_y, learning_rate, num_epochs)
+
+        # cross validation
+        # iterate through each instance of the test set
+        for j in range(len(test_X)):
+            confidence = getOutput(test_X[j], neural_net)
+            if round(confidence) == 1:
+                prediction = meta['Class'][1][1]
+            else:
+                prediction = meta['Class'][1][0]
+
+            print("Fold = ", i, "| Prediction = ", prediction,"| Actual = ", test_y[j], " | Confidence = ", confidence)
+
 
