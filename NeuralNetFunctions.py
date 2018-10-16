@@ -110,18 +110,20 @@ def trainNeuralNetwork(neural_net, train_X, train_y, l_r, num_epochs):
     # warnings.filterwarnings('error')
     # number of epochs means how many times you go over the dataset
     for i in range(num_epochs):
+        print('----Epoch = ', i)
         j = 0
-        print('Epoch ', i)
+        # print('Epoch ', i)
         idx2 = list(range(len(train_X)))
         random.shuffle(idx2)
         for i in idx2:
+
             output = getOutput(train_X[i], neural_net)
             # print(y, output)
             backpropogate(neural_net, train_X[i], train_y[i], output,  l_r)
             j+=1
         # print("Weights for output")
 
-        print(neural_net[2].weights)
+        # print(neural_net[2].weights)
         # print("Hidden layer nodes weights")
         # for i in range(0,2):
         #     print(neural_net[1][i].weights)
