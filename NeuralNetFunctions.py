@@ -110,7 +110,7 @@ def trainNeuralNetwork(neural_net, train_X, train_y, l_r, num_epochs):
     # warnings.filterwarnings('error')
     # number of epochs means how many times you go over the dataset
     for i in range(num_epochs):
-        print('----Epoch = ', i)
+        # print('----Epoch = ', i)
         j = 0
         # print('Epoch ', i)
         idx2 = list(range(len(train_X)))

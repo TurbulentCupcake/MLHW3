@@ -123,6 +123,6 @@ def printPredictions(index_vector, fold_vector, actual_vector, prediction_vector
         confidence_output = confidence_vector[index_vector.index(i)]
         new_confidence_output.append(confidence_output)
 
-        print(fold_output, predicted_output, actual_output, "%.6f" % confidence_output, actual_output == predicted_output)
+        print(fold_output, predicted_output, actual_output, "%.6f" % confidence_output)
 
     return new_fold_output, new_predicted_output, new_actual_output, new_confidence_output

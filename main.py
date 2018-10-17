@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
 
     for i in range(0, num_folds):
-        print('Fold = ', i )
+        # print('Fold = ', i )
         for index in folds[i]:
             index_vector.append(index)
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
         # train the neural net with the new data
 
-        trainNeuralNetwork(neural_net, train_X, train_y, learning_rate, num_epochs)
+        # trainNeuralNetwork(neural_net, train_X, train_y, learning_rate, num_epochs)
 
         # cross validation
         # iterate through each instance of the test set
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         hits.append(i==j)
 
     counts = dict(collections.Counter(hits))
-    print('Accuracy for folds=', num_folds,' num_epochs = ',num_epochs, ' is ', counts[True]/len(hits))
+    # print('Accuracy for folds=', num_folds,' num_epochs = ',num_epochs, ' is ', counts[True]/len(hits))
 
 
 
