@@ -1,0 +1,162 @@
+\documentclass[a4paper]{article}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{paralist}
+\usepackage{epstopdf}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyvrb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{float}
+\usepackage{paralist}
+\usepackage[svgname]{xcolor}
+\usepackage{enumerate}
+\usepackage{array}
+\usepackage{times}
+\usepackage{url}
+\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage{environ}
+\usepackage{times}
+\usepackage{textcomp}
+\usepackage{caption}
+
+
+\urlstyle{rm}
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[]
+\newtheorem{conjecture}{Conjecture}[]
+\newtheorem{example}{Example}[]
+\newtheorem{theorem}{Theorem}[]
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+
+\floatname{algorithm}{Procedure}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\newcommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\br}[1]{\{#1\}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+\newcommand{\vc}[1]{\boldsymbol{#1}}
+\newcommand{\xv}{\vc{x}}
+\newcommand{\Sigmav}{\vc{\Sigma}}
+\newcommand{\alphav}{\vc{\alpha}}
+\newcommand{\muv}{\vc{\mu}}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+\def\x{\mathbf x}
+\def\y{\mathbf y}
+\def\w{\mathbf w}
+\def\v{\mathbf v}
+\def\E{\mathbb E}
+\def\V{\mathbb V}
+
+% TO SHOW SOLUTIONS, include following (else comment out):
+\newenvironment{soln}{
+    \leavevmode\color{blue}\ignorespaces
+}{}
+
+
+\hypersetup{
+%    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\geometry{
+  top=1in,            % <-- you want to adjust this
+  inner=1in,
+  outer=1in,
+  bottom=1in,
+  headheight=3em,       % <-- and this
+  headsep=2em,          % <-- and this
+  footskip=3em,
+}
+
+
+\pagestyle{fancyplain}
+\lhead{\fancyplain{}{Homework 3: Written Exercise Part}}
+\rhead{\fancyplain{}{CS 760 Machine Learning}}
+\cfoot{\thepage}
+
+\title{\textsc{Homework 3: \\ Written Exercise Part}} % Title
+
+%\newcommand{\outDate}{Aug. 31, 2016}
+%\newcommand{\dueDate}{5:30 pm, Sep. 7, 2016}
+
+
+%%% NOTE:  Replace 'NAME HERE' etc., and delete any "\red{}" wrappers (so it won't show up as red)
+
+%\author{
+%\red{$>>$NAME HERE$<<$} \\
+%\red{$>>$ID HERE$<<$}\\
+%} 
+
+\date{}
+
+\begin{document}
+
+\maketitle 
+
+
+\section{Multinomial Na\"ive Bayes [25/2 pts]}
+Consider the Multinomial Na\"ive Bayes model. For each point $(\mathbf{x}, y)$, $y \in \{0, 1\}$, $\mathbf{x} = (x_1, x_2, \ldots, x_M)$ where each $x_j$ is an integer from $\{1, 2, \ldots, K\}$ for $1\le j \le M$. Here $K$ and $M$ are two fixed integer. 
+
+Suppose we have $N$ data points $\{(\mathbf{x}^{(i)}, y^{(i)}): 1 \le i \le N\}$, generated as follows.
+\begin{algorithmic}
+\STATE \textbf{for} $i \in \{1, \ldots, N\}$: 
+\STATE \quad $y^{(i)} \sim \text{Bernoulli}(\phi)$
+\STATE \quad \textbf{for} $j \in \{1, \ldots, M\}$:
+\STATE \quad \quad $x_j^{(i)} \sim \text{Multinomial}(\mathbf{\theta}_{y^{(i)}}, 1)$
+\end{algorithmic}
+Here $\phi \in \mathbb{R}$ and $\mathbf{\theta}_k \in \mathbb{R}^{K} (k \in \{0,1\}$ are parameters. Note that $\sum_l \theta_{k, l} = 1$ since they are the parameters of a multinomial distribution.
+
+Derive the formula for estimating the parameters $\phi$ and $\mathbf{\theta}_k$, as we have done in the lecture for the Bernoulli Na\"ive Bayes model. Show the steps.
+
+\begin{soln}  Solution goes here. \end{soln}
+
+
+\section{Logistic Regression [25/2 pts]}
+Suppose for each class $i \in \{1,\ldots, K\}$, the class-conditional density $p(\mathbf{x}| y = i)$ is normal with mean $\mathbf{\mu}_i \in \mathbb{R}^d$ and identity covariance: 
+\[
+  p(\mathbf{x} | y=i) = N(\mathbf{x}| \mathbf{\mu}_i, \mathbf{I}).
+\]
+Prove that $p(y=i|\mathbf{x})$ is a softmax over a linear transformation of $\mathbf{x}$. Show the steps.
+
+\begin{soln}  Solution goes here. \end{soln}
+
+
+\bibliographystyle{apalike}
+
+
+%----------------------------------------------------------------------------------------
+
+
+\end{document}
